@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>RCM Charts</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background: #121212;
+      color: #e0e0e0;
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #90caf9;
+    }
+    .chart-container {
+      width: 80%;
+      margin: 30px auto;
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #2a2a2a;
+    }
+    canvas {
+      width: 100% !important;
+      height: 400px !important;
+    }
+  </style>
+</head>
+<body>
+  <h1>RCM Validation Analytics</h1>
+
+  <div class="chart-container">
+    <h2>Claim Counts by Error Category</h2>
+    <canvas id="claimsChart"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h2>Paid Amount by Error Category</h2>
+    <canvas id="amountChart"></canvas>
+  </div>
+
+  <script>
+    const errorCategories = {{ error_categories|safe }};
+    const claimCounts = {{ claim_counts|safe }};
+    const paidAmounts = {{ paid_amounts|safe }};
+
+
+
+    // Claim counts chart
+    new Chart(document.getElementById("claimsChart"), {
+      type: "bar",
+      data: {
+        labels: errorCategories,
+        datasets: [{
+          label: "Claim Counts",
+          data: claimCounts,
+          backgroundColor: ["#f44336", "#ff9800", "#9c27b0", "#4caf50"]
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: "Number of Claims per Error Category",
+            color: "#e0e0e0"
+          }
+        },
+        scales: {
+          x: { ticks: { color: "#e0e0e0" } },
+          y: { ticks: { color: "#e0e0e0" } }
+        }
+      }
+    });
+
+    // Paid amounts chart
+    new Chart(document.getElementById("amountChart"), {
+      type: "bar",
+      data: {
+        labels: errorCategories,
+        datasets: [{
+          label: "Paid Amount (AED)",
+          data: paidAmounts,
+          backgroundColor: ["#f44336", "#ff9800", "#9c27b0", "#4caf50"]
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: "Total Paid Amount per Error Category",
+            color: "#e0e0e0"
+          }
+        },
+        scales: {
+          x: { ticks: { color: "#e0e0e0" } },
+          y: { ticks: { color: "#e0e0e0" } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

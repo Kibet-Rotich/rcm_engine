@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RCM Validation Engine</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #1e1e1e;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.4em;
+            color: #90caf9;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+        }
+        a {
+            display: block;
+            margin: 12px;
+            padding: 12px 20px;
+            background: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            width: 220px;
+            text-align: center;
+        }
+        a:hover {
+            background: #444;
+        }
+        .logout {
+            margin-top: 30px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <header>RCM Validation Engine</header>
+    <div class="container">
+        <a href="{% url 'upload_claims' %}">📂 Upload Claims</a>
+        <a href="{% url 'upload_rules' %}">📂 Upload Rules</a>
+        <a href="{% url 'claim_results' %}">📊 View Claim Results</a>
+        <a href="{% url 'rule_summary' %}">📑 View Parsed Rules</a>
+        <a href="{% url 'run_validation' %}">⚡ Run Validation</a>
+
+        <div class="logout">
+            <a href="{% url 'logout' %}">🚪 Logout</a>
+        </div>
+    </div>
+</body>
+</html>

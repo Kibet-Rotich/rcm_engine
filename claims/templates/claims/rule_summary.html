@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rule Summary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #121212;
+            color: #e0e0e0;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+        .rule-block {
+            background: #1e1e1e;
+            border: 1px solid #2a2a2a;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .rule-block h2 {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #90caf9;
+        }
+        .rule-list {
+            padding-left: 20px;
+        }
+        .rule-item {
+            margin-bottom: 5px;
+            color: #cfcfcf;
+        }
+        a, button {
+            background: #333;
+            color: #fff;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        a:hover, button:hover {
+            background: #444;
+        }
+    </style>
+</head>
+<body>
+    <h1>Parsed Rule Summary</h1>
+
+    {% for rule in rules %}
+        <div class="rule-block">
+            <h2>{{ rule.type }} Rules ({{ rule.name }}) — uploaded {{ rule.uploaded_at }}</h2>
+            {% if rule.parsed %}
+                <ul class="rule-list">
+                {% for r in rule.parsed %}
+                    <li class="rule-item">
+                        <strong>{{ r.rule_type }}</strong> — {{ r|safe }}
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p><em>No rules parsed</em></p>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <br>
+    <a href="{% url 'upload_rules' %}">⬅ Back to Upload Rules</a>
+</body>
+</html>

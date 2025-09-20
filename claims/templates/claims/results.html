@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Claim Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #121212;
+            color: #e0e0e0;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background: #1e1e1e;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: #2a2a2a;
+            color: #bbbbbb;
+        }
+        tr:nth-child(even) {
+            background: #181818;
+        }
+        tr:hover {
+            background: #2a2a2a;
+        }
+        .status-validated { color: #4caf50; font-weight: bold; }
+        .status-not_validated { color: #f44336; font-weight: bold; }
+        .status-pending { color: #ff9800; font-weight: bold; }
+        a, button {
+            background: #333;
+            color: #fff;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        a:hover, button:hover {
+            background: #444;
+        }
+    </style>
+</head>
+<body>
+    <h1>Claim Validation Results</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Claim ID</th>
+                <th>Service Date</th>
+                <th>Service Code</th>
+                <th>Diagnosis Codes</th>
+                <th>Status</th>
+                <th>Error Type</th>
+                <th>Error Explanation</th>
+                <th>Recommended Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for claim in claims %}
+            <tr>
+                <td>{{ claim.claim_id }}</td>
+                <td>{{ claim.service_date }}</td>
+                <td>{{ claim.service_code }}</td>
+                <td>{{ claim.diagnosis_codes }}</td>
+                <td class="status-{{ claim.status|lower }}">{{ claim.status }}</td>
+                <td>{{ claim.error_type }}</td>
+                <td>
+                    {% if claim.error_explanation %}
+                        <ul>
+                        {% for line in claim.error_explanation.splitlines %}
+                            <li>{{ line }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ claim.recommended_action }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+    <a href="{% url 'upload_claims' %}">⬅ Back to Upload</a>
+</body>
+</html>
