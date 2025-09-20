@@ -5,57 +5,60 @@ from django.shortcuts import render
 def index(request):
     return render(request, "index.html")
 
-import csv
-import uuid
-from datetime import datetime
 from django.shortcuts import render, redirect
 from django.core.files.storage import FileSystemStorage
 from .models import Claim
+from .forms import ClaimUploadForm
+import csv, uuid
+from datetime import datetime
 
 @login_required
 def upload_claims(request):
-    if request.method == "POST" and request.FILES.get("file"):
-        csv_file = request.FILES["file"]
-        fs = FileSystemStorage()
-        filename = fs.save(csv_file.name, csv_file)
-        filepath = fs.path(filename)
+    if request.method == "POST":
+        form = ClaimUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            csv_file = form.cleaned_data["file"]
+            fs = FileSystemStorage()
+            filename = fs.save(csv_file.name, csv_file)
+            filepath = fs.path(filename)
 
-        with open(filepath, newline="", encoding="utf-8") as f:
-            reader = csv.DictReader(f)
+            with open(filepath, newline="", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
 
-            for row in reader:
-                # --- Parse service_date ---
-                raw_date = row.get("service_date")
-                parsed_date = None
-                if raw_date:
-                    try:
-                        parsed_date = datetime.strptime(raw_date, "%m/%d/%y").date()
-                    except ValueError:
+                for row in reader:
+                    raw_date = row.get("service_date")
+                    parsed_date = None
+                    if raw_date:
                         try:
-                            parsed_date = datetime.strptime(raw_date, "%d/%m/%y").date()
+                            parsed_date = datetime.strptime(raw_date, "%m/%d/%y").date()
                         except ValueError:
-                            parsed_date = None  # leave empty if not parseable
+                            try:
+                                parsed_date = datetime.strptime(raw_date, "%d/%m/%y").date()
+                            except ValueError:
+                                parsed_date = None
 
-                # --- Create claim ---
-                Claim.objects.create(
-                    claim_id=str(uuid.uuid4())[:8],
-                    encounter_type=row.get("encounter_type"),
-                    service_date=parsed_date,
-                    national_id=row.get("national_id"),
-                    member_id=row.get("member_id"),
-                    facility_id=row.get("facility_id"),
-                    unique_id=row.get("unique_id"),
-                    diagnosis_codes=row.get("diagnosis_codes"),
-                    service_code=row.get("service_code"),
-                    paid_amount_aed=row.get("paid_amount_aed"),
-                    approval_number=row.get("approval_number"),
-                    status="PENDING",
-                    error_type="NONE",
-                )
+                    Claim.objects.create(
+                        claim_id=str(uuid.uuid4())[:8],
+                        encounter_type=row.get("encounter_type"),
+                        service_date=parsed_date,
+                        national_id=row.get("national_id"),
+                        member_id=row.get("member_id"),
+                        facility_id=row.get("facility_id"),
+                        unique_id=row.get("unique_id"),
+                        diagnosis_codes=row.get("diagnosis_codes"),
+                        service_code=row.get("service_code"),
+                        paid_amount_aed=row.get("paid_amount_aed"),
+                        approval_number=row.get("approval_number"),
+                        status="PENDING",
+                        error_type="NONE",
+                    )
 
-        return redirect("claim_results")
+            return redirect("claim_results")
+    else:
+        form = ClaimUploadForm()
 
-    return render(request, "claims/upload_claims.html")
+    return render(request, "claims/upload_claims.html", {"form": form})
+
 
 
 from .rule_parser import parse_pdf_rules
